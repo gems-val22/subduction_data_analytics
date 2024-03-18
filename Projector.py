@@ -8,7 +8,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler 
 from sklearn.decomposition import PCA, KernelPCA
 
-from figuremaker import FigureMaker
+from FigureMaker import FigureMaker
 
 
 class LogTransformer(TransformerMixin, BaseEstimator):

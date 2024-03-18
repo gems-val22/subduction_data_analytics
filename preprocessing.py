@@ -13,7 +13,7 @@ np.random.seed(42)
 # -------------- EARTHQUAKE DATA: ----------------------------
 
 # importing files exported from USGS and combining them:
-path = '../data/eq_data'
+path = 'data/eq_data'
 files = Path(path).glob('*.csv')
 
 dfs = list()
@@ -47,7 +47,7 @@ eq_data = eq_data[(eq_data.longitude < -40) | (eq_data.longitude > 60)]
    
 # -------------- SUBDUCTION ZONE PARAMETER DATA ----------------------------
 
-all_data = pd.read_csv('../data/feature_data.csv')
+all_data = pd.read_csv('data/feature_data.csv')
 
 # missing values: change from #NUM! to np.nan
 for col in all_data.columns:
@@ -79,7 +79,7 @@ segment_data = all_data.copy()
 
 # Assigning maximum magnitudes using the binning module (this will take ca. 1 hr to run):
 
-from binning_test import eq_binning
+from binning import eq_binning
 segment_data = eq_binning(segment_data, eq_data)
 
 
