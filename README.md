@@ -1,1 +1,4 @@
-# subduction_data_analytics
+# PAPER TITLE
+
+- libraries and versions
+- how to use

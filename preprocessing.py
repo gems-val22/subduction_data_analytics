@@ -38,7 +38,7 @@ eq_data = eq_data.drop(columns = to_drop)
 eq_data = eq_data.reset_index().drop(columns = 'index') 
 
 # adding historical data:
-historic_eqs = pd.DataFrame([[9, -125, 45], [9, 100, -3], [9, -75, -15], [8.8, -73, -20]], columns = ['mag', 'longitude', 'latitude'])
+historic_eqs = pd.read_csv('data/historical_earthquakes.csv').drop(columns = ['Unnamed: 0', 'location', 'year', 'SRL'])
 eq_data = pd.concat([historic_eqs, eq_data])
 
 # discarding earthquakes outside of the pacific (to decrease the binning algorithm's run time): 
@@ -63,14 +63,6 @@ all_data.drop(all_data.loc[all_data.Sub_Zone=='Kuril_Kamchatka']\
 all_data.drop(all_data.loc[all_data.Sub_Zone=='Izu_Bonin']\
               [(all_data.Latitude > 31) | (all_data.Latitude < 28)].index, inplace=True)
 
-# discarding outliers:
-# all_data = all_data.drop(all_data[pd.to_numeric(all_data.Sed_Thick) > 2000].index) # based on the boxplot of the training data
-
-# Feature transforms: log transforming roughness, sediment thickness, and dip angle: 
-# all_data.Rough = np.log(all_data.Rough)
-# all_data.Sed_Thick = np.log(pd.to_numeric(all_data.Sed_Thick))
-# all_data.Dip = np.log(pd.to_numeric(all_data.Dip))
-# all_data.rename(columns = {'Rough': 'log(Rough)', 'Sed_Thick' : 'log(Sed_Thick)', 'Dip' : 'log(Dip)'}, inplace=True)
 
 
 # -------------- ASSIGNING MAXIMUM MAGNITUDES ----------------------------
@@ -79,10 +71,10 @@ segment_data = all_data.copy()
 
 # Assigning maximum magnitudes using the binning module (this will take ca. 1 hr to run):
 
-from binning import eq_binning
+from modules.binning import eq_binning
 segment_data = eq_binning(segment_data, eq_data)
 
 
 # -------------- EXPORTING FINAL DATASET ----------------------------
 
-segment_data.to_csv('preprocessed_data.csv')
+segment_data.to_csv('data/preprocessed_data.csv')

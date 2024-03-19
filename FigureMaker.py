@@ -4,7 +4,7 @@ import matplotlib.patches as  mpatches
 from mpl_toolkits.axes_grid1 import ImageGrid
 from pandas.plotting import parallel_coordinates
 
-import graphics as graph
+import modules.graphics as graph
 
 
 class FigureMaker():

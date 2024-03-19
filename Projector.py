@@ -49,7 +49,7 @@ class Projector():
             FigureMaker(self.data_projected)
 
         
-    def load_data(self, path = 'preprocessed_data.csv'):
+    def load_data(self, path = 'data/preprocessed_data.csv'):
         
         all_data = pd.read_csv(path).drop(columns = ['Unnamed: 0', 'Segment', 'sSSE', 'lSSE'])
         
