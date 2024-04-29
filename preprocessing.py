@@ -1,3 +1,21 @@
+'''
+
+Script to assign maximum magnitudes to subduction margin segments.
+
+
+Input data needed: 
+------------------
+- earthquake catalogue (multiple files) in the folder "data/eq_data"
+- historical earthquake data (historical_earthquakes.csv) in the folder "data"
+- segment location data (feature_data.csv) in the folder "data"
+
+Calls: 
+------
+- the function eq_binning from binning.py (in the folder "modules") 
+
+'''
+
+
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -12,7 +30,7 @@ np.random.seed(42)
 
 # -------------- EARTHQUAKE DATA: ----------------------------
 
-# importing files exported from USGS and combining them:
+# importing USGS earthquake catalogue files and combining them:
 path = 'data/eq_data'
 files = Path(path).glob('*.csv')
 
@@ -37,11 +55,11 @@ to_drop = ['time', 'depth', 'nst', 'gap', 'dmin', 'rms', 'net', 'id', 'updated',
 eq_data = eq_data.drop(columns = to_drop)
 eq_data = eq_data.reset_index().drop(columns = 'index') 
 
-# adding historical data:
-historic_eqs = pd.read_csv('data/historical_earthquakes.csv').drop(columns = ['Unnamed: 0', 'location', 'year', 'SRL'])
+# adding historical earthquake data:
+historic_eqs = pd.read_csv('data/historical_earthquakes.csv').drop(columns = ['margin', 'year'])
 eq_data = pd.concat([historic_eqs, eq_data])
 
-# discarding earthquakes outside of the pacific (to decrease the binning algorithm's run time): 
+# discarding earthquakes outside of the Pacific (to decrease the binning algorithm's run time): 
 eq_data = eq_data[(eq_data.longitude < -40) | (eq_data.longitude > 60)]
 
    
@@ -69,7 +87,7 @@ all_data.drop(all_data.loc[all_data.Sub_Zone=='Izu_Bonin']\
 
 segment_data = all_data.copy() 
 
-# Assigning maximum magnitudes using the binning module (this will take ca. 1 hr to run):
+# Assigning maximum magnitudes using the binning module (this may take ca. 1 hr to run):
 
 from modules.binning import eq_binning
 segment_data = eq_binning(segment_data, eq_data)
@@ -78,3 +96,4 @@ segment_data = eq_binning(segment_data, eq_data)
 # -------------- EXPORTING FINAL DATASET ----------------------------
 
 segment_data.to_csv('data/preprocessed_data.csv')
+

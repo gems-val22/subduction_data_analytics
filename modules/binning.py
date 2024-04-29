@@ -152,12 +152,12 @@ def eq_binning(segment_data, eq_data):
 
             x2, y2 = eq_data.iloc[e].longitude, eq_data.iloc[e].latitude
 
-            if (x1-10 <= x2) & (x1+10 >= x2) & (y1-10 <= y2) & (y1+10 >= y2): # this is so that the algorithm have to do the 
+            if (x1-10 <= x2) & (x1+10 >= x2) & (y1-10 <= y2) & (y1+10 >= y2): # this is so that the algorithm does not have to do the 
                                                                               # euclidean distance calculation for all data 
                 distance = euclidean_distance(x1, y1, x2, y2)
 
-                if distance <= eq_data.iloc[e].SRL/2:
-                    segment_data['Max_mag'].iloc[s] = eq_data.iloc[e].mag
+                if distance <= eq_data.iloc[e].SRL/2:                         # have found earthquake that matches the segment 
+                    segment_data['Max_mag'].iloc[s] = eq_data.iloc[e].mag     # assign maximum magnitude 
                     break
                     
     return segment_data

@@ -58,7 +58,7 @@ class FigureMaker():
         axes = [ax[0,0], ax[0,1], ax[0,2], ax[1,0], ax[1,1]]
 
         for i in range(5): 
-            feature_plot = graph.plotting_kriging_map(self.data, self.features[i], axes[i]) 
+            feature_plot = graph.feature_plots(self.data, self.features[i], axes[i]) 
             txt, threshold = graph.mag_density(self.data, axes[i])
             txt, mag_range = graph.mag_range_density(self.data, axes[i])
             graph.pc_axis_labels(axes[i], self.xmin, self.xmax, self.ymin, self.ymax)

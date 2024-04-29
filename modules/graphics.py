@@ -133,40 +133,16 @@ def mag_range_density(data, ax, mag_range = [7,8.5], threshold = 8.5, legend = F
         
     else: 
         return txt, mag_range
-    
-    
-
-def feature_kriging(data, feature):
-    
-    OK = OrdinaryKriging(
-            data['PC1'], 
-            data['PC2'], 
-            data[feature], 
-            variogram_model='power',
-            verbose=False,
-            enable_plotting=False,
-            nlags=30,
-        )
-    
-    x = np.linspace(data.PC1.min()*1.25, data.PC1.max()*1.25, 50)   
-    y = np.linspace(data.PC2.min()*1.25, data.PC2.max()*1.25, 50)
-
-    feature_kriged, var = OK.execute("grid", x, y)
-    
-    return feature_kriged, var, x, y
 
 
-def plotting_kriging_map(data, feature, ax):
+def feature_plots(data, feature, ax):
     
-    feature_kriged, _, x, y = feature_kriging(data, feature)
-    
-    x_min, x_max, y_min, y_max = x.min(), x.max(), y.min(), y.max()
+    x_min, x_max = data.PC1.min()*1.25, data.PC1.max()*1.25
+    y_min, y_max = data.PC2.min()*1.25, data.PC2.max()*1.25
     vmin, vmax = data[feature].min(), np.percentile(data[feature], 90)
-    
-    cax = ax.imshow(feature_kriged, extent=(x_min, x_max, y_min, y_max), origin='lower', cmap = 'coolwarm', vmin=vmin, vmax=vmax)
-    
+        
     ax.scatter(data['PC1'], data['PC2'], s = 60, c = 'white')
-    ax.scatter(data['PC1'], data['PC2'], s = 40, c = data[feature], cmap = 'coolwarm', alpha = .5,  vmin=vmin, vmax=vmax)
+    ft_plot = ax.scatter(data['PC1'], data['PC2'], s = 40, c = data[feature], cmap = 'coolwarm', alpha = .5,  vmin=vmin, vmax=vmax)
     
     ax.set_xlim([x_min, x_max])
     ax.set_ylim([y_min, y_max])
@@ -174,8 +150,7 @@ def plotting_kriging_map(data, feature, ax):
     feature_dict, unit_dict = get_feature_dicts()
     ax.set_title(feature_dict[feature], size = 14)
     
-    return cax 
-
+    return ft_plot 
 
 
 def pc_axis_labels(ax, xmin, xmax, ymin, ymax, fs = 11):
