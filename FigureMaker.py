@@ -3,11 +3,10 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as  mpatches
+
 from mpl_toolkits.axes_grid1 import ImageGrid
 from scipy.stats import gaussian_kde
 from pandas.plotting import parallel_coordinates
-
-import modules.graphics as graph
 
 
 class FigureMaker():
@@ -15,34 +14,36 @@ class FigureMaker():
     '''
     Class to create figures to show the PC projections. 
     
-    Called in the class Projector (if the input parameter generate_figures is set to True).
-    '''
+    Called in the class Projector (if the input parameter generate_figures is set to True). 
     
+    Inputs:
+    - data: pandas dataframe containing margin property values and principal components for all segments 
+    '''
+   
+
     def __init__(self, data):
         
         self.data = data
         self.xmin, self.xmax, self.ymin, self.ymax = data.PC1.min()*1.25, data.PC1.max()*1.25, data.PC2.min()*1.25, data.PC2.max()*1.25
         
         self.features = ['Sed_Thick', 'Age', 'Dip', 'Vel', 'Rough']
-        self.feature_dict, self.unit_dict = graph.get_feature_dicts()
         
         self.pc_space_plots()
-        self.feature_distribution_plots()
         self.pc_magnitude_plots()
+        self.feature_distribution_plots()
         self.pc_connections_plots()
         
         
     def pc_space_plots(self):
         ''' 
-        Function to create plots of the PC projections colour coded by each feature (margin property).
+        Creates plots of the PC projections colour coded by each feature (margin property).
         
         Called when this class is initiated. 
         
         Calls:
-        - pc_space_distribution from graphics.py
-        - heatmap_diff from graphics.py
-        - get_low_margin_data from graphics.py
-        - 
+        - pc_space_distribution
+        - get_low_margin_data
+        - heatmap_diff 
         '''
         
         # define figure and subplots
@@ -54,74 +55,40 @@ class FigureMaker():
                         cbar_location = "right",
                         cbar_mode="single",
                         cbar_size="5%",
-                        cbar_pad=0.3
-                        )
+                        cbar_pad=0.3)
 
         # subplot 0: scatter plot the PC space distribution colour coded by margins
-        graph.pc_space_distribution(grid[0], self.data)
+        self.pc_space_distribution(grid[0], data = self.data)
         
         # subplot 1: PC space density map for M >= 8.5 segments and PC space distribution of margins with maximum magnitude < 8.5
-        heatmap = graph.heatmap_diff(fig, grid[1], self.data, cbar=False)
-        graph.pc_space_distribution(grid[1], graph.get_low_margin_data(self.data), legend = False, axes_adjust=False)
-
-        # set axes titles and density map colourbar 
+        heatmap = self.heatmap_diff(grid[1])
+        self.pc_space_distribution(grid[1], self.get_low_margin_data())
+        
+        # plot titles
         grid[0].set_title('PC space by margin', fontsize = 14)
         grid[1].set_title('Hazard assessment', fontsize = 14)
+        
+        # axes labels and extent
+        grid[0].set_ylabel('PC2')
+        for i in range(2):
+            grid[i].set_xlim([self.xmin, self.xmax])
+            grid[i].set_ylim([self.ymin, self.ymax])
+            grid[i].set_xlabel('PC1')
+        
+        # margins legend
+        lgnd = grid[0].legend(loc = (0, -.33), ncol = 5, fontsize = 12)
+        for i in range(len(self.data.Sub_Zone.unique())):
+            lgnd.legendHandles[i]._sizes = [40]
+
+        # density map colourbar 
         cbar = fig.colorbar(heatmap, cax=grid.cbar_axes[0])
         cbar.set_label(label=f'Magnitude $\geq$ 8.5 density difference', fontsize = 12)
         cbar.ax.tick_params(labelsize=12)
         
         
-    def feature_distribution_plots(self):
-        ''' 
-        Function to create plots of the PC projections colour coded by each feature (margin property).
-        
-        Called when this class is initiated. 
-        
-        Calls: 
-        - mag_range_density()
-        - feature_plots
-        '''
-        
-        # define figure and subplots
-        fig,ax = plt.subplots(2,3, figsize = (15,8))
-        fig.tight_layout(pad = 4)
-        fig.delaxes(ax[1,2])
-
-        # create a feature PC space distribution plot for each feature:
-        axes = [ax[0,0], ax[0,1], ax[0,2], ax[1,0], ax[1,1]]
-        
-        for i in range(5): 
-            # scatter data colour coded by feature: 
-            feature_plot = self.feature_plots(self.features[i], axes[i]) 
-            
-            # density contours of points with maximum magnitude >= 8.5, and of those with 7 =< maximum magnitude < 8.5
-            self.mag_range_density(axes[i], [8.5, 11], 'solid')
-            self.mag_range_density(axes[i], [7, 8.5], 'dashed')
-            
-            # set axis limits and labels 
-            axes[i].set_xlim([self.xmin, self.xmax])
-            axes[i].set_ylim([self.ymin, self.ymax])
-            axes[i].set_xlabel('PC1')
-            axes[i].set_ylabel('PC2')
-            
-            #set colourbar
-            cbar = fig.colorbar(feature_plot, ax=axes[i], extend = 'both')
-            cbar.set_label(label=f'{self.feature_dict[self.features[i]]} ({self.unit_dict[self.features[i]]})', fontsize = 12)
-            cbar.ax.tick_params(labelsize=12)
-
-        # create a legend to label the density contours 
-        
-        txt = '$M_{max}$'
-        handles = [mpatches.Patch(edgecolor='k', facecolor='none', label=f'Density of segments with {txt} $\geq$ 8.5'),\
-                  mpatches.Patch(edgecolor='k', facecolor='none', linestyle='--', \
-                                 label = f'Density of segments with 7 $\leq$ {txt} < 8.5')]
-        fig.legend(handles=handles, ncol = 2, bbox_to_anchor=(.75, 0.03), fontsize = 12) 
-        
-        
     def pc_magnitude_plots(self):
         ''' 
-        Function to create plots of the PC projections colour coded by maximum magnitude. 
+        Creates plots of the PC projections colour coded by maximum magnitude. 
         
         Called when this class is initiated. 
         '''
@@ -136,8 +103,7 @@ class FigureMaker():
                         cbar_mode="single",
                         cbar_size="5%",
                         cbar_pad=0.3, 
-                        aspect=False
-                        )
+                        aspect=False)
 
         # define discrete colourbar
         cmap = mpl.cm.plasma
@@ -166,9 +132,62 @@ class FigureMaker():
         cbar.ax.tick_params(labelsize=12)
         
         
+    def feature_distribution_plots(self):
+        ''' 
+        Creates plots of the PC projections colour coded by each feature (margin property).
+        
+        Called when this class is initiated. 
+        
+        Calls: 
+        - get_feature_dicts
+        - mag_range_density
+        - feature_plots
+        '''
+        
+        # define figure and subplots
+        fig,ax = plt.subplots(2,3, figsize = (15,8))
+        fig.tight_layout(pad = 4)
+        fig.delaxes(ax[1,2])
+
+        # create a feature PC space distribution plot for each feature:
+        axes = [ax[0,0], ax[0,1], ax[0,2], ax[1,0], ax[1,1]]
+        feature_dict, unit_dict = self.get_feature_dicts()
+
+        
+        for i in range(5): 
+            # scatter data colour coded by feature:             
+            vmin, vmax = self.data[self.features[i]].min(), np.percentile(self.data[self.features[i]], 90)
+            feature_plot = axes[i].scatter(self.data['PC1'], self.data['PC2'], s = 40, c = self.data[self.features[i]], \
+                             cmap = 'coolwarm', alpha = .5,  vmin=vmin, vmax=vmax)
+            
+            # density contours of points with maximum magnitude >= 8.5, and of those with 7 =< maximum magnitude < 8.5
+            self.mag_range_density(ax=axes[i], mag_range=[8.5, 11], linestyle='solid')
+            self.mag_range_density(ax=axes[i], mag_range=[7, 8.5], linestyle='dashed')
+            
+            # set plot title, axis limits and labels 
+            axes[i].set_title(feature_dict[self.features[i]], size = 14)
+            axes[i].set_xlim([self.xmin, self.xmax])
+            axes[i].set_ylim([self.ymin, self.ymax])
+            axes[i].set_xlabel('PC1')
+            axes[i].set_ylabel('PC2')
+            
+            #set colourbar
+            cbar = fig.colorbar(feature_plot, ax=axes[i], extend = 'both')
+            cbar.set_label(label=f'{feature_dict[self.features[i]]} ({unit_dict[self.features[i]]})', fontsize = 12)
+            cbar.ax.tick_params(labelsize=12)
+
+        # create a legend to label the density contours 
+        
+        txt = '$M_{max}$'
+        handles = [mpatches.Patch(edgecolor='k', facecolor='none', label=f'Density of segments with {txt} $\geq$ 8.5'),\
+                  mpatches.Patch(edgecolor='k', facecolor='none', linestyle='--', \
+                                 label = f'Density of segments with 7 $\leq$ {txt} < 8.5')]
+        fig.legend(handles=handles, ncol = 2, bbox_to_anchor=(.75, 0.03), fontsize = 12) 
+        
+        
     def pc_connections_plots(self):
         ''' 
-        Function to create connection plots of the principal components colour coded by maximum magnitude. 
+        Creates connection plots of the principal components colour coded by maximum magnitude. 
         
         Called when this class is initiated. 
         '''
@@ -195,9 +214,83 @@ class FigureMaker():
         
         # subplot 2: only maximum magnitudes between 4 and 8.5
         parallel_coordinates(plotdata[plotdata.label == labels[1]], 'label', color='tab:blue', alpha=.5, ax=ax[2])
-                
+     
+    
+    def heatmap_diff(self, ax, threshold = 8.5):
+        '''
+        Calculates a density difference map of segments with maximum magnitude above the threshold and overall segment distribution
+        in the PC space. 
+        
+        Called in: 
+        - pc_space_plots
+        
+        Parameters: 
+        - ax: axis at which the density map should be plotted
+        - threshold: float, earthquake magnitude value above which the density of high-magnitude segments is calculated, default = 8.5
+        
+        Returns:
+        - heatmap: the density difference map 
+        '''
+
+        # calculate overall density in the PC space
+        x1, y1 = np.array(self.data.PC1, dtype = float), np.array(self.data.PC2, dtype = float)
+        xi, yi = np.mgrid[self.xmin:self.xmax:x1.size**0.5*1j, self.ymin:self.ymax:y1.size**0.5*1j]
+        k1 = gaussian_kde(np.vstack([x1, y1]))
+        zi1 = k1(np.vstack([xi.flatten(), yi.flatten()]))
+
+        # calculate density of maximum magnitudes above threshold in the PC space
+        heatmap_data = self.data[self.data.Max_mag >= threshold]
+        x2, y2 = np.array(heatmap_data.PC1, dtype = float), np.array(heatmap_data.PC2, dtype = float)
+        k2 = gaussian_kde(np.vstack([x2, y2]))
+        zi2 = k2(np.vstack([xi.flatten(), yi.flatten()]))
+
+        # calculate the difference density map
+        zi = zi2-zi1 # density of maximum magnitudes above threshold - overall density
+        
+        # plot density map
+        heatmap = ax.contourf(xi, yi, zi.reshape(xi.shape), cmap = 'coolwarm', alpha = 0.7)
+
+        return heatmap
+    
+        
+    def pc_space_distribution(self, ax, data):
+        '''
+        Scatters PC projection data colour coded by subduction margins. 
+        
+        Called in: 
+        - pc_space_plots
+        
+        Calls: 
+        - get_zone_dicts
+        
+        Parameters: 
+        - ax: axis at which the PC space distribution of segments should be plotted
+        - data: dataframe containing segments to be plotted here 
+        '''
+    
+        zones, zone_color_dict, zone_label_dict = self.get_zone_dicts()
+
+        for zone in zones:
+            if zone in data.Sub_Zone.unique():
+                zonedata = data[data.Sub_Zone == zone]
+                ax.scatter(zonedata.PC1, zonedata.PC2, c = zone_color_dict[zone], s = 10, label = zone_label_dict[zone], alpha = .5)
+
+            else: 
+                pass
             
-    def mag_range_density(self, ax, mag_range, linestyle):
+            
+    def mag_range_density(self, ax, mag_range, linestyle='solid'):
+        '''
+        Calculates and plots density contours of segments with maximum magnitude within the specified range.
+        
+        Called in: 
+        -pc_magnitude_plots
+        
+        Parameters: 
+        - ax: axis at which the density contours should be plotted
+        - mag_range: list containing two values describing the magnitude range of the density contours to be plotted
+        - linestyle: linestyle of the density contours, e.g. 'dashed'. Default is 'solid'
+        '''
         
         # select data within magnitude range
         mag_range_data = self.data[(self.data['Max_mag'] >= mag_range[0]) & (self.data['Max_mag'] < mag_range[1])]
@@ -213,38 +306,79 @@ class FigureMaker():
         cset = ax.contour(xx, yy, f, linestyles = linestyle, colors='k', levels = [.3,.45,.6])
         ax.clabel(cset, inline=1, fontsize=10) # to display the contour levels 
         
-        
-    def feature_plots(self, feature, ax):
+            
+    def get_low_margin_data(self, threshold = 8.5):
         '''
+        Filters data for margins with maximum magnitudes below a threshold (default M8.5).
+        
         Called in: 
-        - feature_distribution_plots
+        - pc_space_plots
         
-        Calls: 
-        - get_feature_dicts()
+        Parameters: 
+        - threshold: float, earthquake magnitude value below which margins should be inlcuded in the returned dataframe
+        
+        Returns: 
+        - a dataframe containing all segments from margins where the highest magnitude is below the threshold
         '''
         
-        vmin, vmax = self.data[feature].min(), np.percentile(self.data[feature], 90)
+        below = []
 
-        ax.scatter(self.data['PC1'], self.data['PC2'], s = 60, c = 'white')
-        ft_plot = ax.scatter(self.data['PC1'], self.data['PC2'], s = 40, c = self.data[feature], \
-                             cmap = 'coolwarm', alpha = .5,  vmin=vmin, vmax=vmax)
+        for zone in self.data.Sub_Zone.unique():
+            zonedata = self.data[self.data.Sub_Zone == zone]
+            if max(zonedata.Max_mag) < threshold:
+                below.append(zone)
 
-        ax.set_xlim([self.xmin, self.xmax])
-        ax.set_ylim([self.ymin, self.ymax])
-
-        feature_dict, unit_dict = self.get_feature_dicts()
-        ax.set_title(feature_dict[feature], size = 14)
-
-        return ft_plot 
+        return self.data[self.data.Sub_Zone.isin(below)]
         
         
     def get_feature_dicts(self):
+        '''
+        Defines and returns dictionaries containing full names for the features, and their units
+        
+        Called in: 
+        - feature_distribution_plots
+        
+        Returns: 
+        - feature_dict: dictionary containing the abbreviated feature names and their full names
+        - unit_dict: dictionary containing the abbreviated feature names and their units
+        '''
 
         feature_dict = {'Sed_Thick': 'Sediment thickness', 'Age': 'Plate Age', 'Dip': 'Dip angle',\
                     'Vel': 'Relative plate velocity', 'Rough': 'Roughness'}
 
         unit_dict = {'Sed_Thick': 'm', 'Age': 'Ma', 'Dip': '°', 'Vel': 'mm/yr', 'Rough': 'mGal'}
         return feature_dict, unit_dict
+    
+    
+    def get_zone_dicts(self):
+        '''
+        Defines and returns a list of all considered subduction margins as well as dictionaries containing the margin's full 
+        names and their assigned colours for plotting
+        
+        Called in: 
+        - pc_space_distribution
+        
+        Returns: 
+        - zones: list containing the names of all considered subduction margins
+        - zone_color_dict: dictionary containing the margin's names and their assigned colours for plotting
+        - zone_label_dict: dictionary containing the margin's names and their better-formatted version 
+        '''
+    
+        zones = ['Sumatra', 'Solomon', 'Vanuatu', 'Tonga_Kermadec', 'Hikurangi', 'Kuril_Kamchatka', 'Japan', 'Izu_Bonin', \
+             'Mariana', 'Nankai_Ryuku',  'Alaska_Aleutian', 'Cascadia', 'Middle_America', 'South_America']
 
+        zone_color_dict = {'South_America': 'midnightblue', 'Sumatra': 'olive', 'Alaska_Aleutian': 'darkgreen', \
+                           'Middle_America': 'r', 'Tonga_Kermadec': 'tab:brown', 'Mariana':'lawngreen', \
+                           'Nankai_Ryuku': 'tab:cyan', 'Vanuatu': 'tab:purple', 'Solomon': 'deeppink', 'Japan': 'b', \
+                           'Cascadia': 'gold', 'Kuril_Kamchatka': 'tab:gray', 'Hikurangi': 'tab:orange', 'Izu_Bonin': 'k'}
 
+        zone_label_dict = {'South_America': 'South America', 'Sumatra': 'Sumatra', 'Alaska_Aleutian': 'Alaska-Aleutian', \
+                           'Middle_America': 'Middle America', 'Tonga_Kermadec': 'Tonga-Kermadec', 'Mariana':'Mariana', \
+                           'Nankai_Ryuku': 'Nankai-Ryukyu', 'Vanuatu': 'Vanuatu', 'Solomon': 'Solomon', 'Japan': 'Japan', \
+                           'Cascadia': 'Cascadia', 'Kuril_Kamchatka': 'Kuril-Kamchatka', 'Hikurangi': 'Hikurangi', \
+                           'Izu_Bonin': 'Izu-Bonin'}
+
+        return zones, zone_color_dict, zone_label_dict
+    
+  
                 
