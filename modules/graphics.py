@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-from pykrige.ok import OrdinaryKriging
 from scipy.stats import gaussian_kde
 
 
