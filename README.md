@@ -1,6 +1,6 @@
-# Fingerprinting subduction margins using PCA profiles: A data science approach to assessing earthquake hazard 
+# Fingerprinting Subduction Margins Using PCA Profiles: A Data Science Approach to Assessing Earthquake Hazard
 
-Brief description of the project.
+This repository contains the code for a project that utilizes Principal Component Analysis (PCA) to evaluate earthquake hazards at subduction margins. The methods and analyses presented here form part of the academic research carried out by Valerie Locher during her MSc and PhD.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -8,27 +8,46 @@ Brief description of the project.
 - [License](#license)
 - [Credits](#credits)
 
-
 ## Installation
 
-- Pyton 3.10.6
-- NumPy 1.23.3
-- Pandas 2.2.1
-- Matplotlib 3.5.3
-- SciPy 1.9.3
-- scikit-learn 1.1.3
+To set up the project environment using conda, follow these steps:
+
+1. Navigate to the project's root directory:
+
+    ```bash
+    cd path/to/subductionPCA
+    ```
+
+2. Create a new conda environment from the provided `environment.yml` file:
+
+    ```bash
+    conda env create -f environment.yml
+    ```
+
+3. Activate the newly created environment:
+
+    ```bash
+    conda activate subductionPCA
+    ```
+
+4. Install the `subductionPCA` package in editable mode:
+
+    ```bash
+    pip install -e .
+    ```
 
 ## Usage
 
-The preprocessing.py script and Projector class are designed for use in Jupyter notebooks. View and follow the instructions in the running_notebook to execute this code. 
+To use the `subductionPCA` package, start by importing the necessary modules:
 
+```python
+from subductionPCA import preprocessing, Projector
+```
+For detailed examples on how to utilize the package, please refer to the demo.ipynb Jupyter notebook included in this repository.
 
 ## License
-
-License information?
-
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Credits
-
-This project is part of Valerie Locher's MSc and PhD work under the supervision of Rebecca Bell, Cédric John, and Parastoo Salah. 
+This project is part of the academic work of Valerie Locher, conducted under the supervision of Professors Rebecca Bell, Cédric John, and Parastoo Salah during her MSc and PhD studies.
 
