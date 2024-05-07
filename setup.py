@@ -10,5 +10,5 @@ setup(
     url='https://github.com/gems-val22/subduction_data_analytics',  
     author='Valerie Locher, et al.',  
     license = "MIT",
-    author_email='acse.students@imperial.ac.uk',  
+    author_email='valerie.locher22@imperial.ac.uk',  
 )
