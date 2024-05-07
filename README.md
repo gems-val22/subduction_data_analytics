@@ -15,7 +15,7 @@ To set up the project environment using conda, follow these steps:
 1. Navigate to the project's root directory:
 
     ```bash
-    cd path/to/subductionPCA
+    cd path/to/subduction_data_analytics
     ```
 
 2. Create a new conda environment from the provided `environment.yml` file:
