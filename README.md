@@ -4,12 +4,15 @@
 
 This repository contains the code for a project that utilizes Principal Component Analysis (PCA) to evaluate earthquake hazards at subduction margins. The methods and analyses presented here form part of the academic research carried out by Valerie Locher during her MSc and PhD.
 
+![alt text](https://github.com/rob-platt/N2N4M/blob/main/docs/ATU0003561F_denoising_example_image.png)
+
 
 ## Table of Contents
 - [Installation](#installation)
 - [Data](#data)
 - [Usage](#usage)
 - [License](#license)
+- [Citation](#citation)
 - [Credits](#credits)
 - [References](#references)
 
@@ -69,9 +72,23 @@ Please ensure the relevant data are downloaded and saved in the correct location
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 
+## Citation
+
+This work has been submitted for publication in Geology.
+
+
 ## Credits
 
-This project is part of the academic work of Valerie Locher, conducted under the supervision of Rebecca Bell, Cédric John, and Parastoo Salah during her MSc and PhD studies, which are funded by the Department of Earth Science and Engineering’s scholarship in computational science and engineering for women. The code presented here was written using the python library scikit-learn. The empirical relationships relating earthquake magnitude to surface rupture length we use here were derived by Wells and Coppersmith (1994).
+This work is part of [Valerie Locher](https://github.com/gems-val22)'s MSc and PhD studies, conducted under the supervision of Rebecca Bell, [Cédric John](https://github.com/cedricmjohn), and Parastoo Salah and contributed to by [Robert Platt](https://github.com/rob-platt). Valerie Locher's studies at Imperial College London are funded by the Department of Earth Science and Engineering’s scholarship in computational science and engineering for women. All code from Cédric John's research group can be found in the [John Lab GitHub repository](https://github.com/johnlab-research).
+
+The empirical relationships relating earthquake magnitude to surface rupture length we use here were derived by Wells and Coppersmith (1994).
+
+<br>
+<br>
+
+<a href="https://www.john-lab.org">
+<img src="https://www.john-lab.org/wp-content/uploads/2023/01/footer_small_logo.png" style="width:220px">
+</a>
 
 
 ## References
