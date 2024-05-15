@@ -16,11 +16,15 @@ Calls:
 '''
 
 
+# +
 import numpy as np
 import pandas as pd
 from pathlib import Path
 import glob
 import os
+
+from subductionPCA.binning import eq_binning
+# -
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -89,7 +93,6 @@ segment_data = all_data.copy()
 
 # Assigning maximum magnitudes using the binning module (this may take ca. 1 hr to run):
 
-from binning import eq_binning
 segment_data = eq_binning(segment_data, eq_data)
 
 
