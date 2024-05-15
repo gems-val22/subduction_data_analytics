@@ -71,7 +71,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Credits
 
-This project is part of the academic work of Valerie Locher, conducted under the supervision of Rebecca Bell, Cédric John, and Parastoo Salah during her MSc and PhD studies, which are funded by the Department of Earth Science and Engineering’s scholarship in computational science and engineering for women. The code presented here was written using the python library scikit-learn. The empirical relationships relating earthquake magnitude to surface rupture length were derived by Wells and Coppersmith (1994).
+This project is part of the academic work of Valerie Locher, conducted under the supervision of Rebecca Bell, Cédric John, and Parastoo Salah during her MSc and PhD studies, which are funded by the Department of Earth Science and Engineering’s scholarship in computational science and engineering for women. The code presented here was written using the python library scikit-learn. The empirical relationships relating earthquake magnitude to surface rupture length we use here were derived by Wells and Coppersmith (1994).
 
 
 ## References
