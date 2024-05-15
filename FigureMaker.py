@@ -106,19 +106,19 @@ class FigureMaker():
                         aspect=False)
 
         # define discrete colourbar
-        cmap = mpl.cm.plasma
-        cmap = (mpl.colors.ListedColormap(['k','tab:purple', 'tab:blue', 'tab:orange', 'tab:red'])
-            .with_extremes(under='tab:purple', over='tab:orange'))
+        cmap = (mpl.colors.ListedColormap(['tab:green', 'tab:blue', 'tab:orange']))
         bounds = [0, 4, 8.5, 10]
-        norm = mpl.colors.BoundaryNorm(bounds, cmap.N, extend='both')
+        norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
         
-        # sort data by maximum magnitude to prepare for plotting
-        plotdata = self.data.sort_values(by = 'Max_mag', ascending = True) 
-
+        # sort data by maximum magnitude to prepare for plotting 
+        high_mag = self.data[self.data.Max_mag >= 8.5]
+        mid_mag = self.data[(self.data.Max_mag >= 4) & (self.data.Max_mag < 8.5)]
+        low_mag = self.data[self.data.Max_mag < 4]
+        
         # 3 scatterplots: PC1 vs. PC2, PC2 vs. PC3, PC3 vs. PC4 
-        plotdata_ = grid[0].scatter(plotdata['PC1'], plotdata['PC2'], c = plotdata.Max_mag, cmap = cmap, norm=norm, alpha = .5)
-        plotdata_ = grid[1].scatter(plotdata['PC2'], plotdata['PC3'], c = plotdata.Max_mag, cmap = cmap, norm=norm, alpha = .5)
-        plotdata_ = grid[2].scatter(plotdata['PC3'], plotdata['PC4'], c = plotdata.Max_mag, cmap = cmap, norm=norm, alpha = .5)
+        for i in range(3):
+            for subset in [mid_mag, low_mag, high_mag]:
+                plot = grid[i].scatter(subset[f'PC{i+1}'], subset[f'PC{i+2}'], c = subset.Max_mag, cmap=cmap, norm=norm, alpha = 0.7)
 
         # set axes labels and plot titles
         for i in range(3): 
@@ -127,7 +127,7 @@ class FigureMaker():
             grid[i].set_title(f'PC{i+1} vs. PC{i+2} by maximum magnitude')
         
         # set colorbar
-        cbar = fig.colorbar(plotdata_, cax=grid.cbar_axes[0])
+        cbar = fig.colorbar(plot, cax=grid.cbar_axes[0])
         cbar.set_label(label=f'Maximum magnitude', fontsize = 12)
         cbar.ax.tick_params(labelsize=12)
         
@@ -206,11 +206,11 @@ class FigureMaker():
         # subplot 0: all data
         parallel_coordinates(plotdata[plotdata.label == labels[1]], 'label', color='tab:blue', alpha=.5, ax=ax[0])
         parallel_coordinates(plotdata[plotdata.label == labels[0]], 'label', color='tab:orange', alpha=.5, ax=ax[0])
-        parallel_coordinates(plotdata[plotdata.label == labels[2]], 'label', color='tab:purple', alpha=.5, ax=ax[0])
+        parallel_coordinates(plotdata[plotdata.label == labels[2]], 'label', color='tab:green', alpha=.5, ax=ax[0])
         
         # subplot 1: only maximum magnitudes < 4 or >= 8.5
         parallel_coordinates(plotdata[plotdata.label == labels[0]], 'label', color='tab:orange', alpha=.5, ax=ax[1])
-        parallel_coordinates(plotdata[plotdata.label == labels[2]], 'label', color='tab:purple', alpha=.5, ax=ax[1])
+        parallel_coordinates(plotdata[plotdata.label == labels[2]], 'label', color='tab:green', alpha=.5, ax=ax[1])
         
         # subplot 2: only maximum magnitudes between 4 and 8.5
         parallel_coordinates(plotdata[plotdata.label == labels[1]], 'label', color='tab:blue', alpha=.5, ax=ax[2])
