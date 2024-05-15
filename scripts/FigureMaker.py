@@ -379,6 +379,6 @@ class FigureMaker():
                            'Izu_Bonin': 'Izu-Bonin'}
 
         return zones, zone_color_dict, zone_label_dict
-    
+
   
-                
+

@@ -31,7 +31,7 @@ np.random.seed(42)
 # -------------- EARTHQUAKE DATA: ----------------------------
 
 # importing USGS earthquake catalogue files and combining them:
-path = 'data/eq_data'
+path = '../data/eq_data'
 files = Path(path).glob('*.csv')
 
 dfs = list()
@@ -56,16 +56,16 @@ eq_data = eq_data.drop(columns = to_drop)
 eq_data = eq_data.reset_index().drop(columns = 'index') 
 
 # adding historical earthquake data:
-historic_eqs = pd.read_csv('data/historical_earthquakes.csv').drop(columns = ['margin', 'year'])
+historic_eqs = pd.read_csv('../data/historical_earthquakes.csv').drop(columns = ['margin', 'year'])
 eq_data = pd.concat([historic_eqs, eq_data])
 
 # discarding earthquakes outside of the Pacific (to decrease the binning algorithm's run time): 
 eq_data = eq_data[(eq_data.longitude < -40) | (eq_data.longitude > 60)]
 
-   
+
 # -------------- SUBDUCTION ZONE PARAMETER DATA ----------------------------
 
-all_data = pd.read_csv('data/feature_data.csv')
+all_data = pd.read_csv('../data/feature_data.csv')
 
 # missing values: change from #NUM! to np.nan
 for col in all_data.columns:
@@ -89,11 +89,11 @@ segment_data = all_data.copy()
 
 # Assigning maximum magnitudes using the binning module (this may take ca. 1 hr to run):
 
-from modules.binning import eq_binning
+from binning import eq_binning
 segment_data = eq_binning(segment_data, eq_data)
 
 
 # -------------- EXPORTING FINAL DATASET ----------------------------
 
-segment_data.to_csv('data/preprocessed_data.csv')
+segment_data.to_csv('../data/preprocessed_data.csv')
 

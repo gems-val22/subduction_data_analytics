@@ -8,7 +8,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler 
 from sklearn.decomposition import PCA, KernelPCA
 
-from FigureMaker import FigureMaker
+from scripts.FigureMaker import FigureMaker
 
 
 class LogTransformer(TransformerMixin, BaseEstimator):
@@ -65,8 +65,8 @@ class LogTransformer(TransformerMixin, BaseEstimator):
             The transformed data after applying natural logarithm to each element.
         """
         return np.log(X + self.seed)
-    
-    
+
+
 class Projector():
     """
     A class for projecting and visualizing data using dimensionality reduction techniques.
@@ -269,5 +269,5 @@ class Projector():
             pca = KernelPCA(kernel=self.params['kernel'], n_components=self.n_components, random_state=42)
 
         return pca
-    
+
     
