@@ -4,8 +4,9 @@
 
 This repository contains the code for a project that utilizes Principal Component Analysis (PCA) to evaluate earthquake hazards at subduction margins. The methods and analyses presented here form part of the academic research carried out by Valerie Locher during her MSc and PhD.
 
-![alt text](https://github.com/rob-platt/N2N4M/blob/main/docs/ATU0003561F_denoising_example_image.png)
+![alt text](https://github.com/gems-val22/subduction_data_analytics/blob/main/docs/figure_3.png)
 
+Distribution of maximum magnitudes in the PC space for the RBF kernel (A) and cosine kernel, excluding subducting plate age (B) projections. C, D: Relative density distribution of segments with maximum magnitude ≥ 8.5 (filled-in density map), and segments belonging to margins with no recorded M ≥ 8.5 earthquakes (data points).
 
 ## Table of Contents
 - [Installation](#installation)
