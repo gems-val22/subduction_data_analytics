@@ -6,7 +6,7 @@ This repository contains the code for a project that utilizes Principal Componen
 
 ![alt text](https://github.com/gems-val22/subduction_data_analytics/blob/main/docs/figure_3.png)
 
-Distribution of maximum magnitudes in the PC space for the RBF kernel (A) and cosine kernel, excluding subducting plate age (B) projections. C, D: Relative density distribution of segments with maximum magnitude ≥ 8.5 (filled-in density map), and segments belonging to margins with no recorded M ≥ 8.5 earthquakes (data points).
+PC space relative density maps of segments with assigned maximum magnitudes of 8.5 and above (filled-in contours) and segment distributions for margins with no giant earthquakes in the instrumental record (scatter points) for projections generated using linear PCA, RBF, and cosine Kernel-PCA. 
 
 ## Table of Contents
 - [Installation](#installation)
@@ -49,12 +49,12 @@ To set up the project environment using conda, follow these steps:
 
 ## Data
 
-We use margin property data compiled by McLellan and Audet (2020). To assign margin segments a maximum observed magnitude, we use data from the USGS earthquake catalogue and four historical earthquakes as described in Schellart and Rawlinson (2013). 
+We use margin property data compiled by McLellan and Audet (2020). To assign margin segments a maximum observed magnitude, we use data from the USGS earthquake catalogue and historical earthquakes from the Global Historical Earthquake Archive (Albini et al., 2013). 
 
 To run this package, download this data and save it as described here:
-- **data/feature_data.csv**: the margin property data (McLellan and Audet, 2020)
-- **data/historical_earthquakes.csv**: the historical earthquake data (as described in Schellart and Rawlinson, 2013)
-- **data/eq_data/filename.csv**: earthquake catalogue files (USGS, 1900-2023). We use a catalogue of wordwide measured earthquakes > M4 as of August 9th 2023. 
+- **data/feature_data.csv**: the margin property data (McLellan and Audet, 2020), access at their [GitHub repository](https://github.com/morgan-mclellan/GJI-S-19-1081) 
+- **data/ghea.csv**: Global Historical Earthquake Catalogue - GHEC v1.0, access at https://www.emidius.eu/GEH/ (Albini et al., 2013)
+- **data/eq_data/filename.csv**: earthquake catalogue files (USGS, 1900-2023), access at the [USGS earthquake catalogue](https://earthquake.usgs.gov/earthquakes/search/). We use a catalogue of wordwide measured earthquakes > M4 as of August 9th 2023. 
 
 
 ## Usage
@@ -82,7 +82,7 @@ This work has been submitted for publication in Geology.
 
 This work is part of [Valerie Locher](https://github.com/gems-val22)'s MSc and PhD studies, conducted under the supervision of Rebecca Bell, [Cédric John](https://github.com/cedricmjohn), and Parastoo Salah and contributed to by [Robert Platt](https://github.com/rob-platt). Valerie Locher's studies at Imperial College London are funded by the Department of Earth Science and Engineering’s scholarship in computational science and engineering for women. All code from Cédric John's research group can be found in the [John Lab GitHub repository](https://github.com/johnlab-research).
 
-The empirical relationships relating earthquake magnitude to surface rupture length we use here were derived by Wells and Coppersmith (1994).
+The empirical relationships relating earthquake magnitude to surface rupture length we use here were derived by Wells and Coppersmith (1994). We calculate Wasserstein distances (Wasserstein, 1969) and Adjusted Rand Indices (Hubert and Arabie, 1985).
 
 <br>
 <br>
@@ -94,11 +94,15 @@ The empirical relationships relating earthquake magnitude to surface rupture len
 
 ## References
 
+Albini, P., Musson, R. M. W., Gomez Capera, A. A., Locati, M., Rovida, A., Stucchi, M., & Viganò, D. (2013). Global historical earthquake archive and catalogue (1000-1903). Pavia, Italy.
+
+Hubert, L., & Arabie, P. (1985). Comparing partitions. Journal of classification, 2, 193-218. 
+
 McLellan, M., & Audet, P. (2020). Uncovering the physical controls of deep subduction zone slow slip using supervised classification of subducting plate features. Geophysical Journal International, 223(1), 94-110. 
 
-Schellart, W. P., & Rawlinson, N. (2013). Global correlations between maximum magnitudes of subduction zone interface thrust earthquakes and physical parameters of subduction zones. Physics of the Earth and Planetary Interiors, 225, 41-67. 
-
 U.S. Geological Survey. (1900 - 2023). Earthquake Catalog. Retrieved August 09, 2023 from https://earthquake.usgs.gov/earthquakes/search/
+
+Wasserstein, L. N. (1969). Markov processes on countable product space describing large systems of automata. Probl. Pered. Inform, 5, 64-73.
 
 Wells, D. L., & Coppersmith, K. J. (1994). New empirical relationships among magnitude, rupture length, rupture width, rupture area, and surface displacement. Bulletin of the seismological Society of America, 84(4), 974-1002.
 <!-- #endregion -->

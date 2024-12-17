@@ -21,17 +21,22 @@ class FigureMaker():
     '''
    
 
-    def __init__(self, data):
+    def __init__(self, projector):
         
-        self.data = data
-        self.xmin, self.xmax, self.ymin, self.ymax = data.PC1.min()*1.25, data.PC1.max()*1.25, data.PC2.min()*1.25, data.PC2.max()*1.25
+        self.data = projector.data_projected
+        self.xmin, self.xmax = self.data.PC1.min()*1.25, self.data.PC1.max()*1.25
+        self.ymin, self.ymax = self.data.PC2.min()*1.25, self.data.PC2.max()*1.25
         
-        self.features = ['Sed_Thick', 'Age', 'Dip', 'Vel', 'Rough']
+        self.threshold = projector.threshold
+        self.all_features = ['Sed_Thick', 'Dip', 'Vel', 'Rough']
+        
+        self.cumulative_explained_variance_ratio = projector.cumulative_explained_variance_ratio
         
         self.pc_space_plots()
         self.pc_magnitude_plots()
         self.feature_distribution_plots()
         self.pc_connections_plots()
+#         self.explained_variance_plot()
         
         
     def pc_space_plots(self):
@@ -60,7 +65,7 @@ class FigureMaker():
         # subplot 0: scatter plot the PC space distribution colour coded by margins
         self.pc_space_distribution(grid[0], data = self.data)
         
-        # subplot 1: PC space density map for M >= 8.5 segments and PC space distribution of margins with maximum magnitude < 8.5
+        # subplot 1: PC space density map for M >= threshold segments and PC space distribution of margins with maximum magnitude < 8.5
         heatmap = self.heatmap_diff(grid[1])
         self.pc_space_distribution(grid[1], self.get_low_margin_data())
         
@@ -82,7 +87,7 @@ class FigureMaker():
 
         # density map colourbar 
         cbar = fig.colorbar(heatmap, cax=grid.cbar_axes[0])
-        cbar.set_label(label=f'Magnitude $\geq$ 8.5 density difference', fontsize = 12)
+        cbar.set_label(label=f'Magnitude $\geq$ {self.threshold} density difference', fontsize = 12)
         cbar.ax.tick_params(labelsize=12)
         
         
@@ -156,8 +161,8 @@ class FigureMaker():
         
         for i in range(5): 
             # scatter data colour coded by feature:             
-            vmin, vmax = self.data[self.features[i]].min(), np.percentile(self.data[self.features[i]], 90)
-            feature_plot = axes[i].scatter(self.data['PC1'], self.data['PC2'], s = 40, c = self.data[self.features[i]], \
+            vmin, vmax = self.data[self.all_features[i]].min(), np.percentile(self.data[self.all_features[i]], 90)
+            feature_plot = axes[i].scatter(self.data['PC1'], self.data['PC2'], s = 40, c = self.data[self.all_features[i]], \
                              cmap = 'coolwarm', alpha = .5,  vmin=vmin, vmax=vmax)
             
             # density contours of points with maximum magnitude >= 8.5, and of those with 7 =< maximum magnitude < 8.5
@@ -165,7 +170,7 @@ class FigureMaker():
             self.mag_range_density(ax=axes[i], mag_range=[7, 8.5], linestyle='dashed')
             
             # set plot title, axis limits and labels 
-            axes[i].set_title(feature_dict[self.features[i]], size = 14)
+            axes[i].set_title(feature_dict[self.all_features[i]], size = 14)
             axes[i].set_xlim([self.xmin, self.xmax])
             axes[i].set_ylim([self.ymin, self.ymax])
             axes[i].set_xlabel('PC1')
@@ -173,7 +178,7 @@ class FigureMaker():
             
             #set colourbar
             cbar = fig.colorbar(feature_plot, ax=axes[i], extend = 'both')
-            cbar.set_label(label=f'{feature_dict[self.features[i]]} ({unit_dict[self.features[i]]})', fontsize = 12)
+            cbar.set_label(label=f'{feature_dict[self.all_features[i]]} ({unit_dict[self.all_features[i]]})', fontsize = 12)
             cbar.ax.tick_params(labelsize=12)
 
         # create a legend to label the density contours 
@@ -216,7 +221,7 @@ class FigureMaker():
         parallel_coordinates(plotdata[plotdata.label == labels[1]], 'label', color='tab:blue', alpha=.5, ax=ax[2])
      
     
-    def heatmap_diff(self, ax, threshold = 8.5):
+    def heatmap_diff(self, ax):
         '''
         Calculates a density difference map of segments with maximum magnitude above the threshold and overall segment distribution
         in the PC space. 
@@ -239,7 +244,7 @@ class FigureMaker():
         zi1 = k1(np.vstack([xi.flatten(), yi.flatten()]))
 
         # calculate density of maximum magnitudes above threshold in the PC space
-        heatmap_data = self.data[self.data.Max_mag >= threshold]
+        heatmap_data = self.data[self.data.Max_mag >= self.threshold]
         x2, y2 = np.array(heatmap_data.PC1, dtype = float), np.array(heatmap_data.PC2, dtype = float)
         k2 = gaussian_kde(np.vstack([x2, y2]))
         zi2 = k2(np.vstack([xi.flatten(), yi.flatten()]))
@@ -307,7 +312,7 @@ class FigureMaker():
         ax.clabel(cset, inline=1, fontsize=10) # to display the contour levels 
         
             
-    def get_low_margin_data(self, threshold = 8.5):
+    def get_low_margin_data(self, low_margin_threshold = 8.5):
         '''
         Filters data for margins with maximum magnitudes below a threshold (default M8.5).
         
@@ -325,7 +330,7 @@ class FigureMaker():
 
         for zone in self.data.Sub_Zone.unique():
             zonedata = self.data[self.data.Sub_Zone == zone]
-            if max(zonedata.Max_mag) < threshold:
+            if max(zonedata.Max_mag) < low_margin_threshold:
                 below.append(zone)
 
         return self.data[self.data.Sub_Zone.isin(below)]
@@ -379,6 +384,25 @@ class FigureMaker():
                            'Izu_Bonin': 'Izu-Bonin'}
 
         return zones, zone_color_dict, zone_label_dict
+    
+    
+    def explained_variance_plot(self):
+        
+        fig,ax = plt.subplots(1,1, figsize = (5,4))
+        fontsize = 12
+
+        plot = ax.plot(np.arange(1,5), self.cumulative_explained_variance_ratio, '--o')
+
+        text_locations = [(i+1.1, self.cumulative_explained_variance_ratio[i]-.02) for i in range(3)]
+        text_locations.append([3.3, .99])
+
+        for i in range(4):
+            ax.annotate(f'{np.round(100*self.cumulative_explained_variance_ratio[i],1)}%', text_locations[i], fontsize = fontsize)
+
+        ax.set_title('Cumulative explained variance ratio by PCs', fontsize  = fontsize)
+        ax.set_xlabel('Principal components (PCs)', fontsize  = fontsize-1)
+        ax.set_ylabel('Cumulative explained variance ratio', fontsize  = fontsize-1)
+        ax.set_ylim([0.3, 1.05])
+        ax.xaxis.set_major_locator(plt.MaxNLocator(4))
 
   
-

@@ -16,7 +16,6 @@ Calls:
 '''
 
 
-# +
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -24,7 +23,6 @@ import glob
 import os
 
 from subductionPCA.binning import eq_binning
-# -
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -60,7 +58,8 @@ eq_data = eq_data.drop(columns = to_drop)
 eq_data = eq_data.reset_index().drop(columns = 'index') 
 
 # adding historical earthquake data:
-historic_eqs = pd.read_csv('../data/historical_earthquakes.csv').drop(columns = ['margin', 'year'])
+historic_eqs = pd.read_csv('../data/ghea.csv')[['M', 'Lon', 'Lat']].rename(columns = {'M':'mag', 'Lon':'longitude', 'Lat':'latitude'})
+# historic_eqs = pd.read_csv('../data/historical_earthquakes.csv').drop(columns = ['margin', 'year'])
 eq_data = pd.concat([historic_eqs, eq_data])
 
 # discarding earthquakes outside of the Pacific (to decrease the binning algorithm's run time): 
@@ -98,5 +97,5 @@ segment_data = eq_binning(segment_data, eq_data)
 
 # -------------- EXPORTING FINAL DATASET ----------------------------
 
-segment_data.to_csv('../data/preprocessed_data.csv')
+segment_data.to_csv('../data/preprocessed_data_ghea.csv')
 

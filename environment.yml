@@ -1,10 +1,10 @@
 name: subductionPCA
 dependencies:
-  - python=3.10
-  - numpy=1.23.3
+  - python=3.10.6
+  - numpy=1.25.2
   - matplotlib=3.5.3
-  - scipy=1.9.3
-  - pandas=2.2.1
+  - scipy=1.14.1
+  - pandas=2.2.3
   - conda-forge::pendulum=2.1.2
   - conda-forge::nbdime=3.2.1
   - conda-forge::jupytext=1.15.2
